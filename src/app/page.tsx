@@ -47,10 +47,20 @@ export default function BerandaPage() {
       </main>
 
       <footer className="border-t border-zinc-200 bg-white py-6 text-center text-xs text-zinc-400">
-        &copy; {new Date().getFullYear()} Bakesbangpol Kota Yogyakarta — SIDOMAS
+        &copy; <TahunSekarang /> Bakesbangpol Kota Yogyakarta — SIDOMAS
       </footer>
     </div>
   );
+}
+
+// Next.js 16 melarang memanggil `new Date()` langsung saat halaman di-build,
+// karena nilainya bisa berubah tiap render (dianggap "tidak stabil"). Trik di
+// sini: bungkus dengan "use cache" supaya Next.js tahu nilainya boleh dihitung
+// sekali lalu disimpan (di-cache) selama beberapa hari, bukan dihitung ulang
+// terus-menerus. Untuk sekadar tahun di footer, ini lebih dari cukup akurat.
+async function TahunSekarang() {
+  "use cache";
+  return new Date().getFullYear();
 }
 
 // Tampilan sementara (placeholder) selagi data ormas masih diambil dari database.
