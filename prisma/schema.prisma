@@ -1,0 +1,220 @@
+// ============================================================
+// SIDOMAS - Skema Database
+// ============================================================
+// File ini adalah "cetak biru" seluruh tabel di database.
+// Prisma akan baca file ini lalu otomatis membuatkan tabel-tabel
+// di Postgres sesuai yang kita tulis di sini.
+//
+// Istilah: "model" di Prisma = satu tabel di database.
+//          setiap baris di dalam model = satu kolom tabel.
+// ============================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") // diambil dari file .env, bukan ditulis langsung di sini (biar aman)
+}
+
+// ------------------------------------------------------------
+// ENUM = daftar pilihan nilai yang tetap (tidak bisa diisi bebas)
+// ------------------------------------------------------------
+
+// 5 jenis dokumen wajib yang harus dimiliki tiap ormas
+enum JenisDokumen {
+  SK_PENGURUSAN
+  SURAT_KETERANGAN_DOMISILI
+  PROGRAM_KERJA
+  SALINAN_BADAN_HUKUM
+  SKTO
+}
+
+// Status sebuah ormas di sistem
+enum StatusOrmas {
+  AKTIF // sudah terverifikasi dan tampil di katalog publik
+  MENUNGGU_VERIFIKASI // baru daftar sendiri (self-registration), belum disetujui admin
+  NONAKTIF // dinonaktifkan admin
+}
+
+// Status pengajuan perubahan data dari portal ormas
+enum StatusPerubahan {
+  PENDING // menunggu admin cek
+  DISETUJUI
+  DITOLAK
+}
+
+// Role akun admin
+enum RoleAdmin {
+  SUPERADMIN // bisa kelola akun admin lain
+  ADMIN // operasional biasa
+}
+
+// Siapa yang melakukan sebuah aksi (untuk log aktivitas)
+enum TipeAktor {
+  ADMIN
+  ORMAS
+  SISTEM // aksi otomatis, misal kirim email reminder
+}
+
+// ------------------------------------------------------------
+// MODEL UTAMA
+// ------------------------------------------------------------
+
+/// Data utama satu organisasi kemasyarakatan (ormas)
+model Ormas {
+  id        String      @id @default(cuid())
+  nama      String
+  kategori  String // contoh: "Keagamaan", "Pemuda", "Sosial Budaya"
+  kemantren String // kecamatan/kemantren di Kota Yogyakarta
+  alamat    String
+  latitude  Float? // untuk peta Leaflet, boleh kosong dulu
+  longitude Float?
+  email     String      @unique
+  logoUrl   String? // link logo yang disimpan di Google Drive
+  status    StatusOrmas @default(MENUNGGU_VERIFIKASI)
+
+  // tanggal berdiri / SK supaya bisa dihitung masa berlaku dokumen
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // relasi: satu ormas punya banyak...
+  pengurus          Pengurus[]
+  dokumen           Dokumen[]
+  kredensialHarian  KredensialHarian[]
+  perubahanPending  PerubahanPending[]
+}
+
+/// Satu baris struktur pengurus (ketua, sekretaris, dst) milik satu ormas
+model Pengurus {
+  id      String @id @default(cuid())
+  ormasId String
+  ormas   Ormas  @relation(fields: [ormasId], references: [id], onDelete: Cascade)
+
+  jabatan String // "Ketua", "Sekretaris", "Bendahara", dst
+  nama    String
+  urutan  Int    @default(0) // untuk atur urutan tampil
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Satu dokumen wajib (versi yang sedang aktif/berlaku) milik satu ormas
+model Dokumen {
+  id          String       @id @default(cuid())
+  ormasId     String
+  ormas       Ormas        @relation(fields: [ormasId], references: [id], onDelete: Cascade)
+  jenis       JenisDokumen
+
+  // fileId di sini merujuk ke file di Google Drive (lewat Google Apps Script)
+  // bukan URL publik langsung -- akses harus lewat token sementara
+  driveFileId String
+  namaFile    String
+  ukuranByte  Int?
+
+  tanggalUpload   DateTime @default(now())
+  tanggalExpired  DateTime? // dipakai untuk notifikasi dokumen akan kedaluwarsa
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  versi DokumenVersi[] // riwayat versi lama dokumen ini
+
+  // satu ormas hanya boleh punya 1 dokumen aktif per jenis
+  @@unique([ormasId, jenis])
+}
+
+/// Versi LAMA dari sebuah dokumen (disimpan saat dokumen diganti, tidak ditimpa)
+model DokumenVersi {
+  id        String  @id @default(cuid())
+  dokumenId String
+  dokumen   Dokumen @relation(fields: [dokumenId], references: [id], onDelete: Cascade)
+
+  driveFileId String // file lama tetap tersimpan di Drive
+  namaFile    String
+  nomorVersi  Int
+
+  digantiPada DateTime @default(now())
+}
+
+/// Token sementara untuk mengakses 1 file dokumen (bukan URL publik permanen)
+model TokenAksesDokumen {
+  id        String   @id @default(cuid())
+  dokumenId String
+  token     String   @unique
+  expiredAt DateTime
+  createdAt DateTime @default(now())
+  dibuatOlehAdminId String?
+}
+
+/// Akun admin Bakesbangpol
+model Admin {
+  id           String    @id @default(cuid())
+  nama         String
+  email        String    @unique
+  passwordHash String
+  role         RoleAdmin @default(ADMIN)
+
+  // untuk fitur 2FA
+  twoFactorSecret  String?
+  twoFactorEnabled Boolean @default(false)
+
+  // untuk fitur lupa password
+  resetToken       String?
+  resetTokenExpiry DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Username + password harian yang dipakai ormas untuk login portal
+/// Password di sini diganti tiap hari (hanya admin yang bisa lihat password aslinya saat dibuat)
+model KredensialHarian {
+  id        String   @id @default(cuid())
+  ormasId   String
+  ormas     Ormas    @relation(fields: [ormasId], references: [id], onDelete: Cascade)
+
+  username     String   @unique
+  passwordHash String // tetap di-hash walau "harian", supaya aman kalau database bocor
+  berlakuUntuk DateTime // tanggal kredensial ini berlaku (1 hari)
+
+  createdAt         DateTime @default(now())
+  dibuatOlehAdminId String
+}
+
+/// Pengajuan perubahan data dari portal ormas, nunggu disetujui/ditolak admin
+model PerubahanPending {
+  id      String @id @default(cuid())
+  ormasId String
+  ormas   Ormas  @relation(fields: [ormasId], references: [id], onDelete: Cascade)
+
+  // data baru yang diajukan, disimpan sebagai JSON supaya fleksibel
+  // (field apa saja yang diubah: nama, alamat, pengurus, dll)
+  dataBaru Json
+
+  status          StatusPerubahan @default(PENDING)
+  catatanAdmin    String? // alasan jika ditolak
+
+  diajukanPada       DateTime  @default(now())
+  diverifikasiPada    DateTime?
+  diverifikasiOlehId  String?
+}
+
+/// Catatan semua aktivitas penting di sistem (buat audit & dashboard log)
+model LogAktivitas {
+  id         String    @id @default(cuid())
+  tipeAktor  TipeAktor
+  aktorId    String? // id admin atau id ormas yang melakukan aksi
+  aktorNama  String // disimpan juga sebagai teks, biar tetap kebaca walau akun dihapus
+  aksi       String // contoh: "LOGIN", "UPLOAD_DOKUMEN", "VERIFIKASI_PERUBAHAN"
+  detail     String? // deskripsi bebas, contoh: "Mengubah alamat kantor"
+  ipAddress  String?
+  createdAt  DateTime  @default(now())
+}
+
+/// Pengaturan sistem yang bisa diubah admin tanpa ubah kode (key-value sederhana)
+model PengaturanSistem {
+  key   String @id
+  value String
+}
