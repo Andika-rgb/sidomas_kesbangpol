@@ -2,7 +2,7 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { cekPasswordOrmas } from "@/lib/ormas-auth";
+import { cekPasswordOrmas } from "@/lib/ormas-password";
 import { buatTokenSesiOrmas, NAMA_COOKIE_SESI_ORMAS } from "@/lib/ormas-auth";
 import {
   sudahTerlaluBanyakPercobaanOrmas,

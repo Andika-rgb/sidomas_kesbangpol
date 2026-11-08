@@ -10,11 +10,8 @@
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import {
-  cekPassword,
-  buatTokenSesiAdmin,
-  NAMA_COOKIE_SESI_ADMIN,
-} from "@/lib/auth";
+import { cekPassword } from "@/lib/admin-password";
+import { buatTokenSesiAdmin, NAMA_COOKIE_SESI_ADMIN } from "@/lib/auth";
 import {
   sudahTerlaluBanyakPercobaan,
   catatLoginGagal,

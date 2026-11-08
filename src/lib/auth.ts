@@ -1,17 +1,18 @@
 // ============================================================
-// Helper untuk autentikasi Admin
+// Helper untuk autentikasi Admin: HANYA sesi login (JWT) di sini.
 // ============================================================
-// Isinya 3 hal:
-// 1. Hash & cek password (pakai bcrypt, bukan simpan password asli)
-// 2. Bikin & cek "tiket sesi login" (pakai JWT yang ditandatangani)
-// 3. Nama cookie tempat tiket itu disimpan di browser
-//
 // Istilah "JWT" (JSON Web Token) = semacam "tiket digital" yang berisi
 // info (misal: id admin, email) dan ditandatangani pakai kunci rahasia
 // (AUTH_SECRET di .env), supaya kalau ada yang coba PALSUKAN tiketnya,
 // sistem bisa tahu karena tanda tangannya nggak cocok.
+//
+// PENTING -- kenapa hash/cek password (bcrypt) TIDAK ada di sini:
+// src/proxy.ts WAJIB meng-import file ini untuk memverifikasi sesi,
+// dan proxy.ts jalan di lingkungan terbatas "Edge Runtime" di Vercel.
+// Supaya proxy.ts tetap seringan & seaman mungkin, fungsi bcrypt
+// dipindah ke file terpisah: src/lib/admin-password.ts, yang hanya
+// dipakai di Server Action (actions.ts) dan skrip seed admin.
 // ============================================================
-import bcrypt from "bcryptjs";
 import { SignJWT, jwtVerify } from "jose";
 
 export const NAMA_COOKIE_SESI_ADMIN = "sidomas_admin_session";
@@ -27,19 +28,6 @@ function ambilKunciRahasia() {
     );
   }
   return new TextEncoder().encode(rahasia);
-}
-
-/** Ubah password asli jadi hash (satu arah, tidak bisa dibalik). */
-export async function hashPassword(passwordAsli: string): Promise<string> {
-  return bcrypt.hash(passwordAsli, 10);
-}
-
-/** Cek apakah password yang diketik user cocok dengan hash di database. */
-export async function cekPassword(
-  passwordAsli: string,
-  hashTersimpan: string
-): Promise<boolean> {
-  return bcrypt.compare(passwordAsli, hashTersimpan);
 }
 
 export type IsiSesiAdmin = {
