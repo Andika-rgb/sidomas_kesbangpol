@@ -32,8 +32,32 @@ export default function DashboardAdminPage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-10">
-        <div className="rounded-lg border border-dashed border-zinc-300 bg-white p-10 text-center text-zinc-500">
-          Statistik, kelola ormas, dan fitur lainnya akan menyusul di tahap
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <a
+            href="/admin/ormas"
+            className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm transition hover:shadow-md"
+          >
+            <h3 className="font-semibold text-zinc-900">Kelola Ormas</h3>
+            <p className="mt-1 text-sm text-zinc-500">
+              Tambah ormas baru, lihat kelengkapan dokumen, dan kredensial
+              login portal.
+            </p>
+          </a>
+          <a
+            href="/admin/berita"
+            className="rounded-lg border border-zinc-200 bg-white p-5 shadow-sm transition hover:shadow-md"
+          >
+            <h3 className="font-semibold text-zinc-900">
+              Berita &amp; Informasi
+            </h3>
+            <p className="mt-1 text-sm text-zinc-500">
+              Tulis dan kelola pengumuman yang tampil di halaman publik.
+            </p>
+          </a>
+        </div>
+
+        <div className="mt-4 rounded-lg border border-dashed border-zinc-300 bg-white p-6 text-center text-sm text-zinc-500">
+          Statistik, ekspor data, dan log aktivitas akan menyusul di tahap
           berikutnya.
         </div>
       </main>

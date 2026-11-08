@@ -66,9 +66,12 @@ enum TipeAktor {
 /// Data utama satu organisasi kemasyarakatan (ormas)
 model Ormas {
   id        String      @id @default(cuid())
+  kodeOrmas String      @unique // contoh: "ORMAS-001", dibuat otomatis oleh sistem
   nama      String
-  kategori  String // contoh: "Keagamaan", "Pemuda", "Sosial Budaya"
+  kategori  String // contoh: "Keagamaan", "Pemuda", "Sosial Budaya" (lihat src/lib/konstanta.ts)
   kemantren String // kecamatan/kemantren di Kota Yogyakarta
+  bentuk    String? // contoh: "Perkumpulan", "Yayasan"
+  bidangKegiatan String?
   alamat    String
   latitude  Float? // untuk peta Leaflet, boleh kosong dulu
   longitude Float?
@@ -76,29 +79,31 @@ model Ormas {
   logoUrl   String? // link logo yang disimpan di Google Drive
   status    StatusOrmas @default(MENUNGGU_VERIFIKASI)
 
+  // Struktur pengurus inti -- sengaja cuma 3 posisi tetap (bukan tabel
+  // terpisah) supaya sederhana, sesuai yang diminta.
+  namaKetua      String?
+  namaSekretaris String?
+  namaBendahara  String?
+  nomorWaKetua   String?
+
+  // Login portal ormas: usernya TETAP, tapi passwordnya dihitung ulang
+  // otomatis tiap hari (lihat src/lib/ormas-auth.ts) -- jadi TIDAK ada
+  // kolom password di sini sama sekali, supaya tidak ada yang bisa bocor
+  // dari database.
+  usernamePortal String @unique
+
+  // Admin bisa sembunyikan ormas tertentu dari katalog publik tanpa
+  // menonaktifkan akunnya (misal: datanya belum lengkap/perlu dicek dulu).
+  tampilDiKatalog Boolean @default(true)
+  catatanVerifikasi String?
+
   // tanggal berdiri / SK supaya bisa dihitung masa berlaku dokumen
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // relasi: satu ormas punya banyak...
-  pengurus          Pengurus[]
   dokumen           Dokumen[]
-  kredensialHarian  KredensialHarian[]
   perubahanPending  PerubahanPending[]
-}
-
-/// Satu baris struktur pengurus (ketua, sekretaris, dst) milik satu ormas
-model Pengurus {
-  id      String @id @default(cuid())
-  ormasId String
-  ormas   Ormas  @relation(fields: [ormasId], references: [id], onDelete: Cascade)
-
-  jabatan String // "Ketua", "Sekretaris", "Bendahara", dst
-  nama    String
-  urutan  Int    @default(0) // untuk atur urutan tampil
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }
 
 /// Satu dokumen wajib (versi yang sedang aktif/berlaku) milik satu ormas
@@ -169,19 +174,19 @@ model Admin {
   updatedAt DateTime @updatedAt
 }
 
-/// Username + password harian yang dipakai ormas untuk login portal
-/// Password di sini diganti tiap hari (hanya admin yang bisa lihat password aslinya saat dibuat)
-model KredensialHarian {
-  id        String   @id @default(cuid())
-  ormasId   String
-  ormas     Ormas    @relation(fields: [ormasId], references: [id], onDelete: Cascade)
+/// Berita/pengumuman yang admin terbitkan ke halaman publik
+model Berita {
+  id             String   @id @default(cuid())
+  judul          String
+  isi            String // teks isi berita
+  gambarUrl      String? // opsional, link gambar di Google Drive
 
-  username     String   @unique
-  passwordHash String // tetap di-hash walau "harian", supaya aman kalau database bocor
-  berlakuUntuk DateTime // tanggal kredensial ini berlaku (1 hari)
+  dipublikasikan Boolean  @default(true) // admin bisa sembunyikan tanpa hapus
 
-  createdAt         DateTime @default(now())
-  dibuatOlehAdminId String
+  dibuatOlehAdminId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 /// Pengajuan perubahan data dari portal ormas, nunggu disetujui/ditolak admin

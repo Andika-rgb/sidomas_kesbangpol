@@ -54,3 +54,46 @@ export async function catatLoginBerhasil(
     },
   });
 }
+
+// --- Versi untuk login ORMAS (polanya sama persis seperti admin) ---
+
+export async function sudahTerlaluBanyakPercobaanOrmas(
+  username: string
+): Promise<boolean> {
+  const batasWaktu = new Date(Date.now() - JENDELA_WAKTU_MENIT * 60 * 1000);
+  const jumlahGagal = await prisma.logAktivitas.count({
+    where: {
+      aksi: "LOGIN_ORMAS_GAGAL",
+      aktorNama: username,
+      createdAt: { gte: batasWaktu },
+    },
+  });
+  return jumlahGagal >= BATAS_PERCOBAAN_GAGAL;
+}
+
+export async function catatLoginOrmasGagal(username: string, ip?: string) {
+  await prisma.logAktivitas.create({
+    data: {
+      tipeAktor: "ORMAS",
+      aktorNama: username,
+      aksi: "LOGIN_ORMAS_GAGAL",
+      ipAddress: ip,
+    },
+  });
+}
+
+export async function catatLoginOrmasBerhasil(
+  ormasId: string,
+  namaOrmas: string,
+  ip?: string
+) {
+  await prisma.logAktivitas.create({
+    data: {
+      tipeAktor: "ORMAS",
+      aktorId: ormasId,
+      aktorNama: namaOrmas,
+      aksi: "LOGIN_ORMAS_BERHASIL",
+      ipAddress: ip,
+    },
+  });
+}
