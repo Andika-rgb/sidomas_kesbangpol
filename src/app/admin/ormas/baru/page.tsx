@@ -1,5 +1,5 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, type ReactNode } from "react";
 import Link from "next/link";
 import { tambahOrmasAction, type HasilTambahOrmas } from "../actions";
 import { DAFTAR_KATEGORI_ORMAS, DAFTAR_KEMANTREN } from "@/lib/konstanta";
@@ -217,7 +217,7 @@ export default function HalamanTambahOrmas() {
   );
 }
 
-function JudulSeksi({ children }: { children: React.ReactNode }) {
+function JudulSeksi({ children }: { children: ReactNode }) {
   return (
     <div className="border-t border-garis pt-4 first:border-t-0 first:pt-0">
       <p className="font-judul text-sm font-medium text-navy">{children}</p>
