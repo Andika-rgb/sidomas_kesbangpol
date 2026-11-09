@@ -59,5 +59,8 @@ export const URUTAN_JENIS_DOKUMEN = [
   "SKTO",
 ] as const;
 
-// Batas ukuran file PDF: 1 MB (sesuai keterbatasan storage gratis kita)
-export const BATAS_UKURAN_PDF_BYTE = 1 * 1024 * 1024;
+// Batas ukuran file PDF: 500 KB (sesuai keterbatasan storage gratis kita)
+export const BATAS_UKURAN_PDF_BYTE = 500 * 1024;
+
+// Batas ukuran logo ormas (gambar), juga 500 KB
+export const BATAS_UKURAN_LOGO_BYTE = 500 * 1024;
