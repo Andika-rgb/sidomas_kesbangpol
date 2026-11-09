@@ -72,6 +72,7 @@ model Ormas {
   kemantren String // kecamatan/kemantren di Kota Yogyakarta
   bentuk    String? // contoh: "Perkumpulan", "Yayasan"
   bidangKegiatan String?
+  keteranganValidasi String? // contoh: "Valid s/d 2026", catatan bebas soal validasi data
   alamat    String
   latitude  Float? // untuk peta Leaflet, boleh kosong dulu
   longitude Float?
@@ -85,6 +86,19 @@ model Ormas {
   namaSekretaris String?
   namaBendahara  String?
   nomorWaKetua   String?
+
+  // Legal Standing (badan hukum) -- bukan dokumennya sendiri (itu ada di
+  // model Dokumen jenis SALINAN_BADAN_HUKUM), ini cuma data teks pendukung
+  legalJenis     String? // contoh: "Akta Notaris"
+  legalNomor     String?
+  legalTahun     Int?
+  legalBerlakuSd String? // teks bebas, contoh: "2026" atau "Seumur hidup"
+
+  // SKTO (Surat Keterangan Terdaftar Ormas) -- data teks pendukung,
+  // file PDF-nya sendiri ada di model Dokumen jenis SKTO
+  sktoNomor     String?
+  sktoTahun     Int?
+  sktoBerlakuSd String?
 
   // Login portal ormas: usernya TETAP, tapi passwordnya dihitung ulang
   // otomatis tiap hari (lihat src/lib/ormas-auth.ts) -- jadi TIDAK ada

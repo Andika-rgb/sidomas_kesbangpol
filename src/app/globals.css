@@ -1,26 +1,44 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Token desain SIDOMAS
+   ============================================================
+   Semua warna & font dasar didefinisikan di SATU TEMPAT ini.
+   Kalau nanti mau ganti warna, cukup ubah di sini saja -- semua
+   halaman yang pakai kelas bg-navy, text-emas, dsb otomatis ikut.
+   ============================================================ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #faf8f3; /* putih gading, bukan abu-abu polos */
+  --foreground: #2a2622; /* charcoal hangat, bukan hitam pekat */
+
+  --warna-navy: #1b2a4a; /* warna utama -- kesan institusi pemerintah */
+  --warna-navy-terang: #253a63;
+  --warna-emas: #b38b2d; /* aksen -- terinspirasi warna Keraton Jogja */
+  --warna-emas-terang: #e8c77a; /* versi terang, dipakai di atas navy */
+  --warna-sage: #5b7f6d; /* status "aktif/terverifikasi" */
+  --warna-sage-bg: #e3ebe5;
+  --warna-sage-teks: #3b5a48;
+  --warna-garis: #e7e1d3; /* border kartu */
+  --warna-teks-redup: #8a8270;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-navy: var(--warna-navy);
+  --color-navy-terang: var(--warna-navy-terang);
+  --color-emas: var(--warna-emas);
+  --color-emas-terang: var(--warna-emas-terang);
+  --color-sage: var(--warna-sage);
+  --color-sage-bg: var(--warna-sage-bg);
+  --color-sage-teks: var(--warna-sage-teks);
+  --color-garis: var(--warna-garis);
+  --color-teks-redup: var(--warna-teks-redup);
+  --font-sans: var(--font-inti);
+  --font-judul: var(--font-judul);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

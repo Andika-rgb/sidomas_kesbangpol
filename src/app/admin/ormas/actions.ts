@@ -1,9 +1,17 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { passwordHariIni } from "@/lib/ormas-password";
+import { passwordHariIni } from "@/lib/ormas-auth";
 import { revalidatePath } from "next/cache";
 
 export type HasilTambahOrmas = { error?: string; sukses?: boolean };
+
+/** Ubah isi field angka dari form jadi number, atau null kalau kosong/bukan angka. */
+function angkaAtauNull(nilai: FormDataEntryValue | null): number | null {
+  const teks = String(nilai || "").trim();
+  if (!teks) return null;
+  const angka = Number(teks);
+  return Number.isFinite(angka) ? angka : null;
+}
 
 /** Buat kode ormas otomatis berikutnya, contoh: "ORMAS-001", "ORMAS-002", dst. */
 async function kodeOrmasBerikutnya(): Promise<string> {
@@ -56,7 +64,21 @@ export async function tambahOrmasAction(
           String(formData.get("nomorWaKetua") || "").trim() || null,
         catatanVerifikasi:
           String(formData.get("catatanVerifikasi") || "").trim() || null,
-        status: "AKTIF",
+        keteranganValidasi:
+          String(formData.get("keteranganValidasi") || "").trim() || null,
+        legalJenis: String(formData.get("legalJenis") || "").trim() || null,
+        legalNomor: String(formData.get("legalNomor") || "").trim() || null,
+        legalTahun: angkaAtauNull(formData.get("legalTahun")),
+        legalBerlakuSd:
+          String(formData.get("legalBerlakuSd") || "").trim() || null,
+        sktoNomor: String(formData.get("sktoNomor") || "").trim() || null,
+        sktoTahun: angkaAtauNull(formData.get("sktoTahun")),
+        sktoBerlakuSd:
+          String(formData.get("sktoBerlakuSd") || "").trim() || null,
+        status: (String(formData.get("status") || "AKTIF") as
+          | "AKTIF"
+          | "MENUNGGU_VERIFIKASI"
+          | "NONAKTIF"),
         tampilDiKatalog: formData.get("tampilDiKatalog") === "on",
       },
     });
