@@ -1,6 +1,6 @@
 "use server";
 import { prisma } from "@/lib/prisma";
-import { passwordHariIni } from "@/lib/ormas-auth";
+import { passwordHariIni } from "@/lib/ormas-password";
 import { revalidatePath } from "next/cache";
 
 export type HasilTambahOrmas = { error?: string; sukses?: boolean };
