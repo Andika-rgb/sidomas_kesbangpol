@@ -12,7 +12,7 @@ export function TombolTogglePublikasi({
     <button
       type="button"
       onClick={() => togglePublikasiBeritaAction(id, !dipublikasikan)}
-      className="text-xs font-medium text-emerald-700 underline hover:text-emerald-800"
+      className="text-xs font-medium text-blue-700 underline hover:text-blue-900"
     >
       {dipublikasikan ? "Sembunyikan" : "Tampilkan"}
     </button>

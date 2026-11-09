@@ -32,7 +32,9 @@ export default function TombolLihatPassword({
 
   if (info) {
     return (
-      <span className="font-mono text-xs text-emerald-700">{info}</span>
+      <span className="rounded bg-emerald-50 px-2 py-1 font-mono text-xs font-medium text-emerald-700">
+        {info}
+      </span>
     );
   }
 
@@ -41,7 +43,7 @@ export default function TombolLihatPassword({
       type="button"
       onClick={lihat}
       disabled={memuat}
-      className="text-xs font-medium text-emerald-700 underline hover:text-emerald-800"
+      className="text-xs font-medium text-blue-700 underline hover:text-blue-900"
     >
       {memuat ? "Memuat..." : "Lihat password hari ini"}
     </button>

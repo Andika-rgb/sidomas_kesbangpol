@@ -18,8 +18,8 @@ export default function FormTambahBerita() {
   }, [state]);
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-5">
-      <h2 className="mb-3 text-sm font-semibold text-zinc-700">
+    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 className="mb-3 text-sm font-semibold text-slate-700">
         Tulis Berita Baru
       </h2>
       <form ref={formRef} action={formAction} className="space-y-3">
@@ -27,15 +27,19 @@ export default function FormTambahBerita() {
           name="judul"
           required
           placeholder="Judul berita"
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700"
         />
         <textarea
           name="isi"
           required
           rows={4}
           placeholder="Isi berita..."
-          className="w-full rounded-md border border-zinc-300 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700"
         />
+        <p className="text-xs text-slate-400">
+          Lampiran gambar untuk berita akan tersedia setelah integrasi Google
+          Drive selesai.
+        </p>
         {state.error && (
           <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">
             {state.error}
@@ -44,7 +48,7 @@ export default function FormTambahBerita() {
         <button
           type="submit"
           disabled={sedangMemproses}
-          className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60"
+          className="rounded-md bg-blue-900 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 disabled:opacity-60"
         >
           {sedangMemproses ? "Menyimpan..." : "Terbitkan"}
         </button>

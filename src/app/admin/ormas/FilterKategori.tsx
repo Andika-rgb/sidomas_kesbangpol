@@ -1,0 +1,30 @@
+"use client";
+// Dropdown filter kategori kecil. "use client" karena butuh onChange
+// (submit form otomatis saat kategori dipilih) -- interaktivitas
+// seperti ini tidak bisa langsung ditulis di Server Component.
+import { DAFTAR_KATEGORI_ORMAS } from "@/lib/konstanta";
+
+export default function FilterKategori({
+  kategoriAktif,
+}: {
+  kategoriAktif: string | null;
+}) {
+  return (
+    <form className="flex items-center gap-2 text-sm text-slate-600">
+      <span className="font-medium">Kategori:</span>
+      <select
+        name="kategori"
+        defaultValue={kategoriAktif ?? "Semua kategori"}
+        onChange={(e) => e.currentTarget.form?.submit()}
+        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+      >
+        <option>Semua kategori</option>
+        {DAFTAR_KATEGORI_ORMAS.map((k) => (
+          <option key={k} value={k}>
+            {k}
+          </option>
+        ))}
+      </select>
+    </form>
+  );
+}
