@@ -1,6 +1,9 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { passwordHariIni } from "@/lib/ormas-password";
+import { uploadFileKeDrive, urlLogoPublik } from "@/lib/google-drive";
+import { jenisGambarDariIsi, ekstensiDariMime } from "@/lib/validasi-file";
+import { BATAS_UKURAN_LOGO_BYTE } from "@/lib/konstanta";
 import { revalidatePath } from "next/cache";
 
 export type HasilTambahOrmas = { error?: string; sukses?: boolean };
@@ -42,6 +45,38 @@ export async function tambahOrmasAction(
   const kodeOrmas = await kodeOrmasBerikutnya();
   const usernamePortal = kodeOrmas.toLowerCase();
 
+  // Logo opsional -- kalau diisi, divalidasi dari ISI filenya (bukan cuma
+  // nama/ekstensi), lalu diunggah ke Drive sebagai file PUBLIK (khusus
+  // logo boleh publik, beda dari dokumen PDF yang wajib privat).
+  let logoUrl: string | null = null;
+  const logoFile = formData.get("logo");
+  if (logoFile instanceof File && logoFile.size > 0) {
+    if (logoFile.size > BATAS_UKURAN_LOGO_BYTE) {
+      return {
+        error: `Ukuran logo maksimal ${Math.round(
+          BATAS_UKURAN_LOGO_BYTE / 1024
+        )} KB.`,
+      };
+    }
+    const bufferLogo = Buffer.from(await logoFile.arrayBuffer());
+    const mimeLogo = jenisGambarDariIsi(bufferLogo);
+    if (!mimeLogo) {
+      return { error: "Logo harus berupa gambar PNG, JPEG, atau WEBP yang valid." };
+    }
+    try {
+      const hasilLogo = await uploadFileKeDrive({
+        kodeOrmas,
+        filename: `logo.${ekstensiDariMime(mimeLogo)}`,
+        mimeType: mimeLogo,
+        buffer: bufferLogo,
+        publikAtauTidak: true,
+      });
+      logoUrl = urlLogoPublik(hasilLogo.fileId);
+    } catch {
+      return { error: "Gagal upload logo ke Drive. Coba lagi." };
+    }
+  }
+
   try {
     await prisma.ormas.create({
       data: {
@@ -52,6 +87,7 @@ export async function tambahOrmasAction(
         kemantren,
         email,
         alamat,
+        logoUrl,
         bentuk: String(formData.get("bentuk") || "").trim() || null,
         bidangKegiatan:
           String(formData.get("bidangKegiatan") || "").trim() || null,

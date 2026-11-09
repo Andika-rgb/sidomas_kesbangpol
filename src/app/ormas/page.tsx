@@ -1,11 +1,6 @@
 // ============================================================
 // Dashboard Portal Ormas
 // ============================================================
-// Di sinilah tiap ormas nanti upload 5 dokumen wajibnya sendiri.
-// Catatan: tombol upload masih "nonaktif sementara" karena
-// penyimpanan filenya (Google Drive) belum kita sambungkan --
-// itu langkah berikutnya. Kerangka halaman & datanya sudah jalan.
-// ============================================================
 import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
@@ -13,9 +8,11 @@ import type { Dokumen } from "@prisma/client";
 import { verifikasiTokenSesiOrmas, NAMA_COOKIE_SESI_ORMAS } from "@/lib/ormas-auth";
 import { logoutOrmasAction } from "./logout/actions";
 import {
+  BATAS_UKURAN_PDF_BYTE,
   LABEL_JENIS_DOKUMEN,
   URUTAN_JENIS_DOKUMEN,
 } from "@/lib/konstanta";
+import UploadDokumenForm from "./UploadDokumenForm";
 
 export default function DashboardOrmasPage() {
   return (
@@ -105,7 +102,8 @@ async function DaftarDokumenOrmas() {
             5 Dokumen Wajib
           </h2>
           <p className="mt-1 text-sm text-slate-500">
-            Format PDF, maksimal 1 MB per file.
+            Format PDF, maksimal {Math.round(BATAS_UKURAN_PDF_BYTE / 1024)} KB
+            per file.
           </p>
         </div>
         <span className="flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
@@ -154,14 +152,7 @@ async function DaftarDokumenOrmas() {
                   )}
                 </div>
               </div>
-              <button
-                type="button"
-                disabled
-                title="Fitur upload akan aktif setelah Google Drive tersambung"
-                className="flex shrink-0 cursor-not-allowed items-center gap-1.5 rounded-md bg-slate-200 px-3 py-1.5 text-sm text-slate-500"
-              >
-                🔒 Upload (segera)
-              </button>
+              <UploadDokumenForm jenis={jenis} sudahAda={Boolean(dokumen)} />
             </div>
           );
         })}
