@@ -56,7 +56,7 @@ export default function HalamanTambahOrmas() {
             <KolomFile
               label="Logo Ormas (opsional)"
               name="logo"
-              catatan="Aktif setelah Google Drive tersambung"
+              catatan="PNG/JPG/WEBP, maks 500 KB"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -175,19 +175,20 @@ export default function HalamanTambahOrmas() {
             name="catatanVerifikasi"
           />
 
-          {/* Dokumen PDF -- menyusul setelah Google Drive tersambung */}
-          <JudulSeksi>Dokumen PDF Wajib (maks. 1 MB per file)</JudulSeksi>
+          {/* Dokumen PDF -- diunggah ormas lewat portalnya sendiri */}
+          <JudulSeksi>Dokumen PDF Wajib (maks. 500 KB per file)</JudulSeksi>
           <p className="-mt-3 text-xs text-teks-redup">
-            Upload dokumen untuk ormas ini baru bisa dipakai setelah Google
-            Drive tersambung ke sistem (langkah berikutnya) — ormas juga bisa
-            upload sendiri lewat portalnya setelah itu.
+            Dokumen untuk ormas ini diunggah lewat portal ormas setelah
+            akunnya dibuat (bukan di form ini) — supaya rapi, satu alur
+            upload yang sama dipakai baik saat ormas pertama kali
+            melengkapi data maupun saat menggantinya nanti.
           </p>
           <div className="grid grid-cols-2 gap-4 opacity-50">
-            <KolomFile label="SK Pengurusan *" name="dok_sk_pengurusan" catatan="Wajib diunggah" nonaktif />
-            <KolomFile label="Surat Keterangan Domisili *" name="dok_sk_domisili" catatan="Wajib diunggah" nonaktif />
-            <KolomFile label="Program Kerja *" name="dok_program_kerja" catatan="Wajib diunggah" nonaktif />
-            <KolomFile label="Salinan Badan Hukum *" name="dok_badan_hukum" catatan="Wajib diunggah" nonaktif />
-            <KolomFile label="SKTO *" name="dok_skto" catatan="Wajib diunggah" nonaktif />
+            <KolomFile label="SK Pengurusan *" name="dok_sk_pengurusan" catatan="Diunggah lewat portal ormas" nonaktif />
+            <KolomFile label="Surat Keterangan Domisili *" name="dok_sk_domisili" catatan="Diunggah lewat portal ormas" nonaktif />
+            <KolomFile label="Program Kerja *" name="dok_program_kerja" catatan="Diunggah lewat portal ormas" nonaktif />
+            <KolomFile label="Salinan Badan Hukum *" name="dok_badan_hukum" catatan="Diunggah lewat portal ormas" nonaktif />
+            <KolomFile label="SKTO *" name="dok_skto" catatan="Diunggah lewat portal ormas" nonaktif />
           </div>
 
           {state.error && (
