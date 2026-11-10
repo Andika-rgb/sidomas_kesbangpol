@@ -18,8 +18,8 @@ export default function FormTambahBerita() {
   }, [state]);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-3 text-sm font-semibold text-slate-700">
+    <div className="rounded-xl border border-garis bg-white p-5 shadow-sm">
+      <h2 className="mb-3 font-judul text-sm font-semibold text-foreground">
         Tulis Berita Baru
       </h2>
       <form ref={formRef} action={formAction} className="space-y-3">
@@ -27,16 +27,16 @@ export default function FormTambahBerita() {
           name="judul"
           required
           placeholder="Judul berita"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700"
+          className="w-full rounded-md border border-garis px-3 py-2 text-sm text-foreground outline-none focus:border-navy focus:ring-1 focus:ring-navy"
         />
         <textarea
           name="isi"
           required
           rows={4}
           placeholder="Isi berita..."
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700"
+          className="w-full rounded-md border border-garis px-3 py-2 text-sm text-foreground outline-none focus:border-navy focus:ring-1 focus:ring-navy"
         />
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-teks-redup">
           Lampiran gambar untuk berita akan tersedia setelah integrasi Google
           Drive selesai.
         </p>
@@ -48,7 +48,7 @@ export default function FormTambahBerita() {
         <button
           type="submit"
           disabled={sedangMemproses}
-          className="rounded-md bg-blue-900 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 disabled:opacity-60"
+          className="rounded-md bg-navy px-4 py-2 text-sm font-medium text-white hover:bg-navy-terang disabled:opacity-60"
         >
           {sedangMemproses ? "Menyimpan..." : "Terbitkan"}
         </button>

@@ -17,20 +17,22 @@ export default function AdminDaftarOrmasPage({
   searchParams: Promise<{ kategori?: string }>;
 }) {
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800">
+    <div className="min-h-screen bg-background">
+      <header className="bg-navy">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
           <div>
-            <p className="text-xs font-medium text-blue-200">
+            <p className="text-xs font-medium text-[#B9C2D4]">
               <Link href="/admin" className="hover:text-white">
                 &larr; Kembali ke Dashboard
               </Link>
             </p>
-            <h1 className="text-lg font-bold text-white">Kelola Ormas</h1>
+            <h1 className="font-judul text-lg font-bold text-white">
+              Kelola Ormas
+            </h1>
           </div>
           <Link
             href="/admin/ormas/baru"
-            className="rounded-md bg-white px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-50"
+            className="rounded-md bg-emas px-4 py-2 text-sm font-medium text-navy hover:brightness-110"
           >
             + Tambah Ormas
           </Link>
@@ -38,7 +40,7 @@ export default function AdminDaftarOrmasPage({
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-10">
-        <Suspense fallback={<p className="text-slate-500">Memuat...</p>}>
+        <Suspense fallback={<p className="text-teks-redup">Memuat...</p>}>
           <TabelOrmas searchParams={searchParams} />
         </Suspense>
       </main>
@@ -64,22 +66,22 @@ async function TabelOrmas({
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <FilterKategori kategoriAktif={kategoriAktif} />
-        <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+        <span className="rounded-full bg-navy/10 px-3 py-1 text-xs font-medium text-navy">
           {daftarOrmas.length} ormas
         </span>
       </div>
 
       {daftarOrmas.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+        <div className="rounded-xl border border-dashed border-garis bg-white p-10 text-center text-teks-redup">
           Belum ada ormas di kategori ini.{" "}
-          <Link href="/admin/ormas/baru" className="text-blue-700 underline">
+          <Link href="/admin/ormas/baru" className="text-navy underline">
             + Tambah Ormas
           </Link>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-xl border border-garis bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+            <thead className="border-b border-garis bg-background text-left text-xs uppercase tracking-wide text-teks-redup">
               <tr>
                 <th className="px-4 py-3">Kode</th>
                 <th className="px-4 py-3">Nama Ormas</th>
@@ -97,18 +99,18 @@ async function TabelOrmas({
                 return (
                   <tr
                     key={ormas.id}
-                    className="border-b border-slate-100 last:border-0 hover:bg-slate-50"
+                    className="border-b border-garis last:border-0 hover:bg-background"
                   >
                     <td className="px-4 py-3">
-                      <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-xs text-slate-600">
+                      <span className="rounded bg-background px-1.5 py-0.5 font-mono text-xs text-teks-redup">
                         {ormas.kodeOrmas}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-medium text-slate-900">
+                    <td className="px-4 py-3 font-medium text-foreground">
                       {ormas.nama}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-700">
+                      <span className="rounded-full bg-navy/10 px-2 py-0.5 text-xs text-navy">
                         {ormas.kategori}
                       </span>
                     </td>
@@ -116,7 +118,7 @@ async function TabelOrmas({
                       <span
                         className={
                           sudahLengkap
-                            ? "rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700"
+                            ? "rounded-full bg-sage-bg px-2 py-0.5 text-xs font-medium text-sage-teks"
                             : "rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700"
                         }
                       >

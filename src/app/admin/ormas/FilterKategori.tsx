@@ -10,13 +10,13 @@ export default function FilterKategori({
   kategoriAktif: string | null;
 }) {
   return (
-    <form className="flex items-center gap-2 text-sm text-slate-600">
+    <form className="flex items-center gap-2 text-sm text-teks-redup">
       <span className="font-medium">Kategori:</span>
       <select
         name="kategori"
         defaultValue={kategoriAktif ?? "Semua kategori"}
         onChange={(e) => e.currentTarget.form?.submit()}
-        className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+        className="rounded-md border border-garis bg-white px-3 py-1.5 text-sm text-foreground outline-none focus:border-navy focus:ring-1 focus:ring-navy"
       >
         <option>Semua kategori</option>
         {DAFTAR_KATEGORI_ORMAS.map((k) => (

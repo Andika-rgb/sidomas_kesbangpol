@@ -12,24 +12,24 @@ export default function HalamanLoginOrmas() {
   );
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-navy px-4">
       <div className="w-full max-w-sm">
         <Link
           href="/"
-          className="mb-4 inline-block text-sm font-medium text-blue-200 hover:text-white"
+          className="mb-4 inline-block text-sm font-medium text-[#B9C2D4] hover:text-white"
         >
           &larr; Kembali ke beranda
         </Link>
 
         <div className="rounded-2xl border border-white/10 bg-white p-8 shadow-xl">
-          <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-full bg-blue-900 text-sm font-bold text-white">
+          <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-full bg-navy text-sm font-bold text-emas-terang">
             O
           </div>
-          <p className="mt-3 text-xs font-medium text-blue-800">SIDOMAS</p>
-          <h1 className="mt-1 text-xl font-bold text-slate-900">
+          <p className="mt-3 text-xs font-medium text-emas">SIDOMAS</p>
+          <h1 className="mt-1 font-judul text-xl font-bold text-foreground">
             Login Ormas
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-teks-redup">
             Username &amp; password harian didapat dari admin Bakesbangpol.
             Password berganti otomatis setiap hari.
           </p>
@@ -38,7 +38,7 @@ export default function HalamanLoginOrmas() {
             <div>
               <label
                 htmlFor="username"
-                className="mb-1 block text-sm font-medium text-slate-700"
+                className="mb-1 block text-sm font-medium text-foreground"
               >
                 Username
               </label>
@@ -48,7 +48,7 @@ export default function HalamanLoginOrmas() {
                 type="text"
                 required
                 autoComplete="username"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700"
+                className="w-full rounded-md border border-garis px-3 py-2 text-sm text-foreground outline-none focus:border-navy focus:ring-1 focus:ring-navy"
                 placeholder="ormas-001"
               />
             </div>
@@ -56,7 +56,7 @@ export default function HalamanLoginOrmas() {
             <div>
               <label
                 htmlFor="password"
-                className="mb-1 block text-sm font-medium text-slate-700"
+                className="mb-1 block text-sm font-medium text-foreground"
               >
                 Password Hari Ini
               </label>
@@ -66,7 +66,7 @@ export default function HalamanLoginOrmas() {
                 type="password"
                 required
                 autoComplete="current-password"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-700 focus:ring-1 focus:ring-blue-700"
+                className="w-full rounded-md border border-garis px-3 py-2 text-sm text-foreground outline-none focus:border-navy focus:ring-1 focus:ring-navy"
                 placeholder="••••••••"
               />
             </div>
@@ -80,14 +80,14 @@ export default function HalamanLoginOrmas() {
             <button
               type="submit"
               disabled={sedangMemproses}
-              className="w-full rounded-md bg-blue-900 py-2 text-sm font-medium text-white transition hover:bg-blue-800 disabled:opacity-60"
+              className="w-full rounded-md bg-navy py-2 text-sm font-medium text-white transition hover:bg-navy-terang disabled:opacity-60"
             >
               {sedangMemproses ? "Memproses..." : "Masuk"}
             </button>
           </form>
         </div>
 
-        <p className="mt-4 text-center text-xs text-blue-200">
+        <p className="mt-4 text-center text-xs text-[#B9C2D4]">
           Lupa username/password? Hubungi admin Bakesbangpol.
         </p>
       </div>
