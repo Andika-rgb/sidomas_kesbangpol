@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import type { Dokumen } from "@prisma/client";
+import { Lock, FileText } from "@phosphor-icons/react/dist/ssr";
 import { verifikasiTokenSesiOrmas, NAMA_COOKIE_SESI_ORMAS } from "@/lib/ormas-auth";
 import { logoutOrmasAction } from "./logout/actions";
 import {
@@ -107,7 +108,8 @@ async function DaftarDokumenOrmas() {
           </p>
         </div>
         <span className="flex items-center gap-1.5 rounded-full border border-garis bg-white px-3 py-1.5 text-xs font-medium text-teks-redup">
-          🔒 Terbatas: hanya ormas ini &amp; admin yang bisa melihat
+          <Lock size={14} weight="fill" aria-hidden="true" />
+          Terbatas: hanya ormas ini &amp; admin yang bisa melihat
         </span>
       </div>
 
@@ -137,7 +139,7 @@ async function DaftarDokumenOrmas() {
                       : "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-background text-teks-redup"
                   }
                 >
-                  📄
+                  <FileText size={18} weight="duotone" aria-hidden="true" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-foreground">
