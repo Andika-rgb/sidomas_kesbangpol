@@ -1,7 +1,7 @@
 "use server";
 import { prisma } from "@/lib/prisma";
 import { passwordHariIni } from "@/lib/ormas-password";
-import { uploadFileKeDrive, urlLogoPublik } from "@/lib/google-drive";
+import { uploadFileKeDrive, hapusFileDariDrive, urlLogoPublik } from "@/lib/google-drive";
 import { jenisGambarDariIsi, ekstensiDariMime } from "@/lib/validasi-file";
 import { BATAS_UKURAN_LOGO_BYTE } from "@/lib/konstanta";
 import { revalidatePath } from "next/cache";
@@ -148,4 +148,49 @@ export async function lihatPasswordHariIniAction(
     username: ormas.usernamePortal,
     password: passwordHariIni(ormas.kodeOrmas),
   };
+}
+
+/** Ambil fileId Drive dari URL thumbnail publik yang kita buat sendiri. */
+function fileIdDariUrlLogo(logoUrl: string | null): string | null {
+  if (!logoUrl) return null;
+  const cocok = logoUrl.match(/[?&]id=([^&]+)/);
+  return cocok ? cocok[1] : null;
+}
+
+/**
+ * Hapus satu ormas beserta semua dokumen & logonya (di database MAUPUN
+ * di Google Drive, supaya tidak ada file nyangkut yang makan kuota).
+ * Dipanggil langsung dari tombol di AdminOrmasTable, bukan lewat form,
+ * karena cuma 1 aksi tanpa input tambahan.
+ */
+export async function hapusOrmasAction(ormasId: string): Promise<void> {
+  const ormas = await prisma.ormas.findUnique({
+    where: { id: ormasId },
+    include: { dokumen: true },
+  });
+  if (!ormas) return;
+
+  const fileIdLogo = fileIdDariUrlLogo(ormas.logoUrl);
+  const semuaFileId = [
+    ...(fileIdLogo ? [fileIdLogo] : []),
+    ...ormas.dokumen.map((d) => d.driveFileId),
+  ];
+
+  // Hapus file di Drive dulu satu-satu. Kalau ada yang gagal (misal
+  // sudah terlanjur terhapus manual), lanjut saja -- yang penting
+  // data di database tetap bersih.
+  for (const fileId of semuaFileId) {
+    try {
+      await hapusFileDariDrive(fileId);
+    } catch {
+      // diamkan, lanjut ke file berikutnya
+    }
+  }
+
+  await prisma.ormas.delete({ where: { id: ormasId } });
+
+  revalidatePath("/admin/ormas");
+  revalidatePath("/admin");
+  revalidatePath("/katalog");
+  revalidatePath("/");
 }
