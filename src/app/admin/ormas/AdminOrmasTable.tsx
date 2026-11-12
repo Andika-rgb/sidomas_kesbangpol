@@ -1,5 +1,6 @@
 "use client";
 import { useMemo, useState, useTransition } from "react";
+import Link from "next/link";
 import {
   MagnifyingGlass,
   Eye,
@@ -248,15 +249,14 @@ function BarisTabel({
             >
               <Eye size={16} aria-hidden="true" />
             </button>
-            <button
-              type="button"
-              disabled
-              title="Edit -- segera hadir"
-              aria-label="Edit (segera hadir)"
-              className="rounded p-1.5 text-garis"
+            <Link
+              href={`/admin/ormas/${ormas.id}/edit`}
+              title="Edit ormas"
+              aria-label={`Edit ${ormas.nama}`}
+              className="rounded p-1.5 text-teks-redup transition hover:bg-background hover:text-navy"
             >
               <PencilSimple size={16} aria-hidden="true" />
-            </button>
+            </Link>
             <button
               type="button"
               onClick={hapus}
