@@ -23,22 +23,53 @@ async function kodeOrmasBerikutnya(): Promise<string> {
   return `ORMAS-${String(nomor).padStart(3, "0")}`;
 }
 
+/** Ambil fileId Drive dari URL thumbnail publik yang kita buat sendiri. */
+function fileIdDariUrlLogo(logoUrl: string | null): string | null {
+  if (!logoUrl) return null;
+  const cocok = logoUrl.match(/[?&]id=([^&]+)/);
+  return cocok ? cocok[1] : null;
+}
+
+/** Ambil & validasi field teks dari form ormas (dipakai tambah & edit). */
+function ambilFieldOrmas(formData: FormData) {
+  return {
+    nama: String(formData.get("nama") || "").trim(),
+    kategori: String(formData.get("kategori") || "").trim(),
+    kemantren: String(formData.get("kemantren") || "").trim(),
+    email: String(formData.get("email") || "").trim().toLowerCase(),
+    alamat: String(formData.get("alamat") || "").trim(),
+    bentuk: String(formData.get("bentuk") || "").trim() || null,
+    bidangKegiatan: String(formData.get("bidangKegiatan") || "").trim() || null,
+    namaKetua: String(formData.get("namaKetua") || "").trim() || null,
+    namaSekretaris: String(formData.get("namaSekretaris") || "").trim() || null,
+    namaBendahara: String(formData.get("namaBendahara") || "").trim() || null,
+    nomorWaKetua: String(formData.get("nomorWaKetua") || "").trim() || null,
+    catatanVerifikasi: String(formData.get("catatanVerifikasi") || "").trim() || null,
+    keteranganValidasi: String(formData.get("keteranganValidasi") || "").trim() || null,
+    legalJenis: String(formData.get("legalJenis") || "").trim() || null,
+    legalNomor: String(formData.get("legalNomor") || "").trim() || null,
+    legalTahun: angkaAtauNull(formData.get("legalTahun")),
+    legalBerlakuSd: String(formData.get("legalBerlakuSd") || "").trim() || null,
+    sktoNomor: String(formData.get("sktoNomor") || "").trim() || null,
+    sktoTahun: angkaAtauNull(formData.get("sktoTahun")),
+    sktoBerlakuSd: String(formData.get("sktoBerlakuSd") || "").trim() || null,
+    status: String(formData.get("status") || "AKTIF") as
+      | "AKTIF"
+      | "MENUNGGU_VERIFIKASI"
+      | "NONAKTIF",
+    tampilDiKatalog: formData.get("tampilDiKatalog") === "on",
+  };
+}
+
 export async function tambahOrmasAction(
   _state: HasilTambahOrmas,
   formData: FormData
 ): Promise<HasilTambahOrmas> {
-  const nama = String(formData.get("nama") || "").trim();
-  const kategori = String(formData.get("kategori") || "").trim();
-  const kemantren = String(formData.get("kemantren") || "").trim();
-  const email = String(formData.get("email") || "")
-    .trim()
-    .toLowerCase();
-  const alamat = String(formData.get("alamat") || "").trim();
+  const field = ambilFieldOrmas(formData);
 
-  if (!nama || !kategori || !kemantren || !email || !alamat) {
+  if (!field.nama || !field.kategori || !field.kemantren || !field.email || !field.alamat) {
     return {
-      error:
-        "Nama, kategori, kemantren, email, dan alamat wajib diisi.",
+      error: "Nama, kategori, kemantren, email, dan alamat wajib diisi.",
     };
   }
 
@@ -53,9 +84,7 @@ export async function tambahOrmasAction(
   if (logoFile instanceof File && logoFile.size > 0) {
     if (logoFile.size > BATAS_UKURAN_LOGO_BYTE) {
       return {
-        error: `Ukuran logo maksimal ${Math.round(
-          BATAS_UKURAN_LOGO_BYTE / 1024
-        )} KB.`,
+        error: `Ukuran logo maksimal ${Math.round(BATAS_UKURAN_LOGO_BYTE / 1024)} KB.`,
       };
     }
     const bufferLogo = Buffer.from(await logoFile.arrayBuffer());
@@ -79,58 +108,93 @@ export async function tambahOrmasAction(
 
   try {
     await prisma.ormas.create({
-      data: {
-        kodeOrmas,
-        usernamePortal,
-        nama,
-        kategori,
-        kemantren,
-        email,
-        alamat,
-        logoUrl,
-        bentuk: String(formData.get("bentuk") || "").trim() || null,
-        bidangKegiatan:
-          String(formData.get("bidangKegiatan") || "").trim() || null,
-        namaKetua: String(formData.get("namaKetua") || "").trim() || null,
-        namaSekretaris:
-          String(formData.get("namaSekretaris") || "").trim() || null,
-        namaBendahara:
-          String(formData.get("namaBendahara") || "").trim() || null,
-        nomorWaKetua:
-          String(formData.get("nomorWaKetua") || "").trim() || null,
-        catatanVerifikasi:
-          String(formData.get("catatanVerifikasi") || "").trim() || null,
-        keteranganValidasi:
-          String(formData.get("keteranganValidasi") || "").trim() || null,
-        legalJenis: String(formData.get("legalJenis") || "").trim() || null,
-        legalNomor: String(formData.get("legalNomor") || "").trim() || null,
-        legalTahun: angkaAtauNull(formData.get("legalTahun")),
-        legalBerlakuSd:
-          String(formData.get("legalBerlakuSd") || "").trim() || null,
-        sktoNomor: String(formData.get("sktoNomor") || "").trim() || null,
-        sktoTahun: angkaAtauNull(formData.get("sktoTahun")),
-        sktoBerlakuSd:
-          String(formData.get("sktoBerlakuSd") || "").trim() || null,
-        status: (String(formData.get("status") || "AKTIF") as
-          | "AKTIF"
-          | "MENUNGGU_VERIFIKASI"
-          | "NONAKTIF"),
-        tampilDiKatalog: formData.get("tampilDiKatalog") === "on",
-      },
+      data: { kodeOrmas, usernamePortal, logoUrl, ...field },
     });
   } catch (e: unknown) {
-    if (
-      e &&
-      typeof e === "object" &&
-      "code" in e &&
-      (e as { code?: string }).code === "P2002"
-    ) {
+    if (e && typeof e === "object" && "code" in e && (e as { code?: string }).code === "P2002") {
       return { error: "Email ormas ini sudah terdaftar." };
     }
     throw e;
   }
 
   revalidatePath("/admin/ormas");
+  return { sukses: true };
+}
+
+/**
+ * Update data ormas yang sudah ada. ormasId di-"bind" duluan dari
+ * EditOrmasForm.tsx (bukan ikut di formData), jadi urutan parameternya
+ * ormasId dulu baru (prevState, formData) seperti pola useActionState.
+ */
+export async function updateOrmasAction(
+  ormasId: string,
+  _state: HasilTambahOrmas,
+  formData: FormData
+): Promise<HasilTambahOrmas> {
+  const ormasLama = await prisma.ormas.findUnique({ where: { id: ormasId } });
+  if (!ormasLama) return { error: "Ormas tidak ditemukan." };
+
+  const field = ambilFieldOrmas(formData);
+  if (!field.nama || !field.kategori || !field.kemantren || !field.email || !field.alamat) {
+    return {
+      error: "Nama, kategori, kemantren, email, dan alamat wajib diisi.",
+    };
+  }
+
+  // Logo opsional -- kalau admin pilih file baru, logo LAMA dihapus dulu
+  // dari Drive baru upload yang baru. Kalau tidak pilih file, logo lama
+  // tetap dipakai (tidak disentuh sama sekali).
+  let logoUrl = ormasLama.logoUrl;
+  const logoFile = formData.get("logo");
+  if (logoFile instanceof File && logoFile.size > 0) {
+    if (logoFile.size > BATAS_UKURAN_LOGO_BYTE) {
+      return {
+        error: `Ukuran logo maksimal ${Math.round(BATAS_UKURAN_LOGO_BYTE / 1024)} KB.`,
+      };
+    }
+    const bufferLogo = Buffer.from(await logoFile.arrayBuffer());
+    const mimeLogo = jenisGambarDariIsi(bufferLogo);
+    if (!mimeLogo) {
+      return { error: "Logo harus berupa gambar PNG, JPEG, atau WEBP yang valid." };
+    }
+    try {
+      const hasilLogo = await uploadFileKeDrive({
+        kodeOrmas: ormasLama.kodeOrmas,
+        filename: `logo.${ekstensiDariMime(mimeLogo)}`,
+        mimeType: mimeLogo,
+        buffer: bufferLogo,
+        publikAtauTidak: true,
+      });
+      const fileIdLama = fileIdDariUrlLogo(ormasLama.logoUrl);
+      if (fileIdLama) {
+        try {
+          await hapusFileDariDrive(fileIdLama);
+        } catch {
+          // logo lama gagal dihapus (mungkin sudah tidak ada) -- lanjut saja
+        }
+      }
+      logoUrl = urlLogoPublik(hasilLogo.fileId);
+    } catch {
+      return { error: "Gagal upload logo baru ke Drive. Coba lagi." };
+    }
+  }
+
+  try {
+    await prisma.ormas.update({
+      where: { id: ormasId },
+      data: { logoUrl, ...field },
+    });
+  } catch (e: unknown) {
+    if (e && typeof e === "object" && "code" in e && (e as { code?: string }).code === "P2002") {
+      return { error: "Email ini sudah dipakai ormas lain." };
+    }
+    throw e;
+  }
+
+  revalidatePath("/admin/ormas");
+  revalidatePath("/admin");
+  revalidatePath("/katalog");
+  revalidatePath("/");
   return { sukses: true };
 }
 
@@ -148,13 +212,6 @@ export async function lihatPasswordHariIniAction(
     username: ormas.usernamePortal,
     password: passwordHariIni(ormas.kodeOrmas),
   };
-}
-
-/** Ambil fileId Drive dari URL thumbnail publik yang kita buat sendiri. */
-function fileIdDariUrlLogo(logoUrl: string | null): string | null {
-  if (!logoUrl) return null;
-  const cocok = logoUrl.match(/[?&]id=([^&]+)/);
-  return cocok ? cocok[1] : null;
 }
 
 /**
@@ -176,9 +233,6 @@ export async function hapusOrmasAction(ormasId: string): Promise<void> {
     ...ormas.dokumen.map((d) => d.driveFileId),
   ];
 
-  // Hapus file di Drive dulu satu-satu. Kalau ada yang gagal (misal
-  // sudah terlanjur terhapus manual), lanjut saja -- yang penting
-  // data di database tetap bersih.
   for (const fileId of semuaFileId) {
     try {
       await hapusFileDariDrive(fileId);
