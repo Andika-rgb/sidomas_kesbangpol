@@ -6,7 +6,7 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import type { Ormas } from "@prisma/client";
-import { Buildings, Newspaper, CheckCircle, Clock } from "@phosphor-icons/react/dist/ssr";
+import { Buildings, Newspaper, Key, CheckCircle, Clock } from "@phosphor-icons/react/dist/ssr";
 import { URUTAN_JENIS_DOKUMEN } from "@/lib/konstanta";
 import { verifikasiTokenSesiAdmin, NAMA_COOKIE_SESI_ADMIN } from "@/lib/auth";
 import { logoutAdminAction } from "./logout/actions";
@@ -34,7 +34,7 @@ export default function DashboardAdminPage() {
           <IsiDashboard />
         </Suspense>
 
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           <Link
             href="/admin/ormas"
             className="flex items-center gap-3 rounded-xl border border-garis bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-emas hover:shadow-md"
@@ -47,7 +47,23 @@ export default function DashboardAdminPage() {
                 Kelola Ormas
               </p>
               <p className="text-xs text-teks-redup">
-                Data, dokumen, dan kredensial login
+                Data &amp; dokumen ormas
+              </p>
+            </div>
+          </Link>
+          <Link
+            href="/admin/password-harian"
+            className="flex items-center gap-3 rounded-xl border border-garis bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-emas hover:shadow-md"
+          >
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy/10 text-navy">
+              <Key size={20} weight="duotone" aria-hidden="true" />
+            </span>
+            <div>
+              <p className="font-judul font-semibold text-foreground">
+                Password Harian
+              </p>
+              <p className="text-xs text-teks-redup">
+                Kredensial login portal ormas
               </p>
             </div>
           </Link>
@@ -63,15 +79,15 @@ export default function DashboardAdminPage() {
                 Berita &amp; Informasi
               </p>
               <p className="text-xs text-teks-redup">
-                Pengumuman untuk halaman publik
+                Pengumuman halaman publik
               </p>
             </div>
           </Link>
         </div>
 
         <div className="mt-4 rounded-xl border border-dashed border-garis bg-white p-4 text-center text-xs text-teks-redup">
-          Password Harian, Manajemen Admin, Ekspor Data, Log Aktivitas &amp;
-          Pengaturan menyusul di tahap berikutnya.
+          Manajemen Admin, Ekspor Data, Log Aktivitas &amp; Pengaturan
+          menyusul di tahap berikutnya.
         </div>
       </main>
     </div>
